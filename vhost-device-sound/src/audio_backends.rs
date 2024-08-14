@@ -9,7 +9,7 @@ mod null;
 mod pipewire;
 
 #[cfg(all(feature = "gst-backend", target_env = "gnu"))]
-mod gstreamer;
+mod gst;
 
 use std::sync::{Arc, RwLock};
 

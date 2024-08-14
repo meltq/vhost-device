@@ -27,7 +27,7 @@ impl std::fmt::Debug for GStreamerBackend {
 }
 
 impl GStreamerBackend {
-    fn setup_pipeline(&self, stream_id: usize) -> Result<(), Box<dyn std::error::Error>> {
+    fn setup_pipeline(&mut self, stream_id: usize) -> Result<(), Box<dyn std::error::Error>> {
         let streams = self.streams.read().unwrap();
         let s = &streams[stream_id];
 
@@ -40,16 +40,16 @@ impl GStreamerBackend {
         let resample = gst::ElementFactory::make("audioresample").build().unwrap();
         let sink = gst::ElementFactory::make("autoaudiosink").build().unwrap();
 
-        pipeline.add_many(&[&source, &convert, &resample, &sink])?;
-        gst::Element::link_many(&[&source, &convert, &resample, &sink])?;
+        pipeline.add_many([&source, &convert, &resample, &sink])?;
+        gst::Element::link_many([&source, &convert, &resample, &sink])?;
 
         let caps = gst::Caps::builder("audio/x-raw")
-            .field("channels", &s.params.channels)
-            .field("rate", &self.get_rate(s.params.rate))
-            .field("format", &"S16LE")
+            .field("channels", s.params.channels)
+            .field("rate", self.get_rate(s.params.rate))
+            .field("format", "S16LE")
             .build();
 
-        source.set_property("caps", &caps).unwrap();
+        source.set_property("caps", &caps);
 
         pipeline.set_state(gst::State::Playing)?;
 
@@ -58,7 +58,7 @@ impl GStreamerBackend {
         Ok(())
     }
 
-    fn get_rate(&self, rate: u8) -> i32 {
+    const fn get_rate(&self, rate: u8) -> i32 {
         match rate {
             virtio_sound::VIRTIO_SND_PCM_RATE_5512 => 5512,
             virtio_sound::VIRTIO_SND_PCM_RATE_8000 => 8000,
