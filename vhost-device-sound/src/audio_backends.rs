@@ -8,6 +8,9 @@ mod null;
 #[cfg(all(feature = "pw-backend", target_env = "gnu"))]
 mod pipewire;
 
+#[cfg(all(feature = "gst-backend", target_env = "gnu"))]
+mod gstreamer;
+
 use std::sync::{Arc, RwLock};
 
 #[cfg(all(feature = "alsa-backend", target_env = "gnu"))]
